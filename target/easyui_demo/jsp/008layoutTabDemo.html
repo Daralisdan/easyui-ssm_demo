@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>layout布局实例，动态加载页面显示-Tab选项卡——手风琴组件accordion</title>
+    <!--  jquery的核心文件-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/jquery-1.7.2.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.2.6/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.2.6/themes/icon.css">
+
+    <!--    引入公共的css样式-->
+    <link rel="stylesheet" href="../css/common.css">
+
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/jquery.easyui.min.js"></script>
+    <!--    汉化包-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/locale/easyui-lang-zh_CN.js"></script>
+
+
+    <script type="text/javascript">
+        $(function () {
+            //动态加载页面显示，局部刷新====================================================
+
+            //a[title]:表示a标签中必须含有title属性
+            $('a[title]').click(function () {
+
+                //1.通过attr 获取属性title的值
+                var src = $(this).attr('title');
+
+                //2.取标签中的文本值，表示选项卡名称
+                var text = $(this).html();
+
+                //exists：是Tab组件中的方法，指示指定的面板是否已存在，
+                //先判断选项卡是否存在，不存在时，在新建，存在时，跳转到选中的选项卡
+                //text表示选项卡名称
+                if ($('#tt').tabs('exists', text)) {
+                    //select: 选择一个标签页面板
+                    $('#tt').tabs('select', text);
+                } else {
+                    // 3.添加一个新的标签页面板（tab panel）
+                    $('#tt').tabs('add', {
+                        title: text,
+                        // content: '<iframe frameborder="0" src="004form.html"></iframe>',
+                        content: '<iframe frameborder="0" style="width: 100%;height: 100%" src=' + src + '></iframe>',
+                        closable: true,
+                        tools: [{
+                            iconCls: 'icon-mini-refresh',
+                            handler: function () {
+                                alert('refresh');
+                            }
+                        }]
+                    });
+                }
+
+            });
+
+
+        });
+
+
+    </script>
+
+</head>
+<body>
+
+<!--传统的页面=================================-->
+<div id="cc" class="easyui-layout" fit=true style="width:600px;height:400px;">
+
+    <div region="north" title='layout实例' split=false style="height:100px;"></div>
+    <div region='west' title='菜单' iconCls='icon-ok' split=true style="width:200px;">
+        <!--accordion 手风琴组件===============================================-->
+        <div id="aa" class="easyui-accordion" fit="true">
+            <div title="用户管理" style="overflow:auto;padding:10px;">
+                <!--                引入了公共的样式 common.css-->
+                <a title="001Message.html">用户列表</a><br/>
+                <a title="004form.html">用户管理</a>
+            </div>
+
+            <div title="权限管理" selected=true style="padding:10px;">
+            </div>
+
+            <div title="资源管理">
+            </div>
+        </div>
+
+    </div>
+    <div region='center' title='主界面' style="padding:5px;background:#eee;">
+
+        <!--          EasyUI Tabs 标签页/选项卡================================= -->
+        <div id="tt" class="easyui-tabs" fit="true" style="width:500px;height:250px;">
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>传统的表单提交</title>
+    <!--  jquery的核心文件-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/jquery-1.7.2.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.2.6/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.2.6/themes/icon.css">
+
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/jquery.easyui.min.js"></script>
+    <!--    汉化包-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/locale/easyui-lang-zh_CN.js"></script>
+
+
+    <script type="text/javascript">
+        $(function () {
+            //验证组件=======================================
+            //参考官网 validatebox 的方法 ，首先在input上加validType="midLength[2,5]"，然后在写js代码
+
+            $.extend($.fn.validatebox.defaults.rules, {
+                //midLength 自定义的名称，
+                midLength: {
+                    //value：表示input输入框中的值，param：接收的是validType="midLength[2,5]"中的参数[2,5]
+                    validator: function (value, param) {
+                        //param[0]表示数组中的第一个参数，如[2,5]中的2
+                        return value.length >= param[0] && value.length <= param[1];
+                    },
+                    //验证失败时的提示信息
+                    // message: '用户名必须在2~5个字符之间'
+                    message: ''
+                },
+                //密码验证
+                // validType="equalLength[4]"
+                equalLength: {
+                    validator: function (value, param) {
+                        //param[0]表示数组中的第一个参数，如[2,5]中的2
+                        return value.length == param[0];
+                    },
+                    //验证失败时的提示信息
+                    message: "密码必须是4个字符"
+                }
+            });
+
+            //年龄验证 数值验证组件=========================================
+            $('#age').numberbox({
+                min: 0,
+                max: 100,
+                required: true,//定义是否字段应被输入。是 Validatebox的属性
+                missingMessage: '年龄必填',
+                precision: 0  //	显示在小数点后面的最大精度。
+            });
+
+            //日期组件
+            $('#birthday').datebox({
+                required: true,//定义是否字段应被输入。是 Validatebox的属性
+                missingMessage: '生日必填',
+                editable: false //该属性是combox的 combox该属性扩展自验证框（validatebox）
+            });
+
+            //薪水验证
+            $('#salary').numberbox({
+                min: 1000,
+                max: 20000,
+                required: true,//定义是否字段应被输入。是 Validatebox的属性
+                missingMessage: '薪水必填',
+                precision: 2  //	显示在小数点后面的最大精度。
+            });
+
+            //开始时间，结束时间验证，加上时分秒
+            $("#startTime,#endTime").datetimebox({
+                required: true,
+                missingMessage: '时间必填',
+                editable: false
+            });
+
+            //传统的表单提交1===========================================
+            $("#btn1").click(function () {
+                $('#myform').form('submit', {
+                    url: '/user/save',
+                    //提交表单
+                    onSubmit: function () {
+                        //提交表单之前验证,如果验证不通过发送提示消息，通过则发送至后台
+                        if (!$('#myform').form('validate')) {
+                            $.messager.show({
+                                title: '提示信息',
+                                msg: '验证不通过'
+                            });
+                            return false;// 表单不通过时阻止表单提交
+                        }
+                    },
+                    success: function (result) {
+                        //请求成功的回调函数
+                        // var rel=eval((result)) //转换成json格式
+                        var rel = $.parseJSON(result);//转换成json格式
+                        console.log(rel);
+
+                        $.messager.show({
+                            title: rel.sta,
+                            msg: rel.mesage
+                        });
+                    },
+                    error: function () {
+                        //回调时，发生错误时
+                        $.messager.show({
+                            title: rel.sta,
+                            msg: rel.mesage
+                        });
+                    }
+                });
+            });
+
+
+      /*      //传统的表单提交2======================================================
+            $('#myform').form({
+                url: '/user/save',
+                //提交表单
+                onSubmit: function () {
+                    //提交表单之前验证,如果验证不通过发送提示消息，通过则发送至后台
+                    if (!$('#myform').form('validate')) {
+                        $.messager.show({
+                            title: '提示信息',
+                            msg: '验证不通过'
+                        });
+                        return false;// 表单不通过时阻止表单提交
+                    }
+                },
+                success: function (result) {
+                    //请求成功的回调函数
+                    // var rel=eval((result)) //转换成json格式
+                    var rel = $.parseJSON(result);//转换成json格式
+                    console.log(rel);
+
+                    $.messager.show({
+                        title: rel.sta,
+                        msg: rel.mesage
+                    });
+                },
+                error: function () {
+                    //回调时，发生错误时
+                    $.messager.show({
+                        title: rel.sta,
+                        msg: rel.mesage
+                    });
+                }
+            });
+
+            /!*  $("#btn1").click(function () {
+                  $('#myform').submit(); //手动提交表单
+              });*!/
+
+          /!*  //点击回车提交表单
+            $('#myform').find('input').on('keyup', function (event) {
+                // keyCode == 13表示回车键
+                if (event.keyCode == 13) {
+                    $('#myform').submit();
+                }
+            });*!/
+*/
+        });
+
+
+    </script>
+</head>
+<body>
+<!--面板-->
+<div id="mydiv" class="easyui-panel" style="height: 400px;width:400px" title="用户新增">
+    <!--    表单-->
+    <form id="myform" action="" method="post">
+        <table>
+            <tr>
+                <td>用户名：</td>
+                <!-- missingMessage="用户名必填"：当文本框为空时出现的提示文本。
+                    invalidMessage="用户名必须在2~5个字符之间1111111111": 与js代码中的message一样，如果两个同时写的话，表单中的验证会覆盖js代码中的验证提示信息  -->
+                <td><input type="text" class="easyui-validatebox" required="true"
+                           validType="midLength[2,5]" missingMessage="用户名必填" invalidMessage="用户名必须在2~5个字符之间1111111111"
+                           name="username" value=""/></td>
+            </tr>
+            <tr>
+                <!--  validType="equalLength[4]"：表示密码必须是4位-->
+                <td>密码：</td>
+                <td><input type="password" name="password" value="" class="easyui-validatebox" required="true"
+                           validType="equalLength[4]" missingMessage="密码必填"/></td>
+            </tr>
+            <tr>
+                <td>性别：</td>
+                <td>
+                    男<input type="radio" checked="checked" name="sex" value="1"/>
+                    女<input type="radio" name="sex" value="2"/>
+                </td>
+            </tr>
+            <tr>
+                <td>年龄：</td>
+                <td><input id="age" type="text" name="age" value=""/></td>
+            </tr>
+            <tr>
+                <td>出生日期：</td>
+                <td><input id="birthday" style="width: 160px" type="text" name="birthday" value=""/></td>
+            </tr>
+            <tr>
+                <td>所属城市：</td>
+                <!--  valueField="id" ：值 textField="name"：文本内容 对应实体类中的字段
+                获取后台数据：url="/user/getCity" 异步发送请求
+                可以修改光标移动的样式在easyui.css样式中
+                -->
+                <td>
+                    <input type="text" class="easyui-combobox" url="/user/getCity" valueField="id" textField="name"
+                           name="city" value=""/></td>
+            </tr>
+            <tr>
+                <td>薪水：</td>
+                <td><input id="salary" type="text" name="salary" value=""/></td>
+            </tr>
+            <tr>
+                <td>开始时间：</td>
+                <td><input id="startTime" type="text" name="startTime" value=""/></td>
+            </tr>
+            <tr>
+                <td>结束日期：</td>
+                <td><input id="endTime" type="text" name="endTime" value=""/></td>
+            </tr>
+            <tr>
+                <td>个人描述：</td>
+                <td><input type="text" class="easyui-validatebox" required="true"
+                           validType="midLength[5,50]" missingMessage="个人描述必填" invalidMessage="描述必须在5~50个字符之间"
+                           name="description" value=""/></td>
+            </tr>
+            <tr align="center">
+                <td colspan="2">
+                    <a id="btn1" class="easyui-linkbutton">保存</a>
+                    <a id="btn2" class="easyui-linkbutton">取消</a>
+                </td>
+            </tr>
+        </table>
+
+
+    </form>
+</div>
+</body>
+</html>

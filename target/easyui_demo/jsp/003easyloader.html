@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!--  jquery的核心文件-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/jquery-1.7.2.min.js"></script>
+
+    <!--<link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.2.6/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.2.6/themes/icon.css">
+
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/jquery.easyui.min.js"></script>-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/easyloader.js"></script>
+    <!--    汉化包-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/locale/easyui-lang-zh_CN.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            //使用easyui.js==========================================
+            /*   $("#mydiv").window({
+                   title:"我的窗口",
+                   width:300,
+                   height:300
+               });*/
+
+            //使用easyloader 需要手动加入想要的模块==============================
+            /*easyloader.load('window',function () {
+                   $("#mydiv").window({
+                                title:"我的窗口easylaoder",
+                                width:300,
+                                height:300
+                            });
+            });*/
+
+
+            //加载window，messager模块
+            easyloader.load(['window', 'messager'], function () {
+                $("#mydiv").window({
+                    title: "我的窗口easylaoder",
+                    width: 300,
+                    height: 300
+                });
+
+                $.messager.alert('提示信息', '内容', 'error');
+            });
+
+
+        });
+    </script>
+</head>
+<body>
+this is easyui message page
+
+<!--使用jQuery渲染为window窗口-->
+<div id="mydiv"></div>
+</body>
+</html>

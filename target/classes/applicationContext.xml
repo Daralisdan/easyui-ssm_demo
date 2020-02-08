@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<!-- spring的配置文件，主要是配置与业务逻辑相关的配置 -->
+	<!--spring里面与业务逻辑有关的数据源 ，事物控制等重要属性控制 -->
+
+	<!--2.扫描业务逻辑需要的组件，不能与springmvc扫面的组件合并，这里除了controller包不扫描，其他都要扫描 -->
+	<context:component-scan
+		base-package="com.daralisdan">
+		<context:exclude-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+
+	<!-- ===1.配置数据源=================================================================================== -->
+	<!-- 在spring配置文件中需要引入外部文件db.properties中的配置则需要添加配置,并且指定外部文件的位置 -->
+	<context:property-placeholder
+		location="classpath:dbconfig.properties" />
+
+	<bean id="pooledDataSource"
+		class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="jdbcUrl" value="${jdbc.jdbcUrl}"></property>
+		<property name="driverClass" value="${jdbc.driverClass}"></property>
+		<property name="user" value="${jdbc.user}"></property>
+		<property name="password" value="${jdbc.password}"></property>
+	</bean>
+
+	<!-- ====3.配置与mybatis整合的配置文件================================================ -->
+	<!-- SqlSessionFactoryBean可以帮我们创建sqlSessionFactory -->
+	<bean id="sqlSessionFactory"
+		class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!--sqlSessionFactory的创建需要配置的属性 -->
+		<!-- 指定mybatis全局配置文件的位置 -->
+		<property name="configLocation"
+			value="classpath:mybatis-config.xml"></property>
+		<!-- 指定数据源 -->
+		<property name="dataSource" ref="pooledDataSource"></property>
+		<!--指定mybatis，mappers文件的位置 -->
+		<property name="mapperLocations"
+			value="classpath:mappers/*.xml"></property>
+	</bean>
+
+	<!--4. 配置扫描器，将mybatis接口的实现加入到IOC容器中，mybatis接口的实现是一个代理对象 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!--扫描所有dao接口的实现 ，加入到ioc容器中 -->
+		<property name="basePackage" value="com.daralisdan.dao"></property>
+	</bean>
+	<!-- ====================================================================================================== -->
+	<!-- 配置一个可以执行批量的SQLSession=========================================================== -->
+	<bean id="sqlSession"
+		class="org.mybatis.spring.SqlSessionTemplate">
+		<!-- ref连接的是 sqlSessionFactorybean -->
+		<constructor-arg name="sqlSessionFactory"
+			ref="sqlSessionFactory"></constructor-arg>
+		<constructor-arg name="executorType" value="BATCH"></constructor-arg>
+	</bean>
+
+	<!-- ===5.事物控制的配置=============================================================================== -->
+	<!-- 事物管理器 -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<!-- 控制住数据源，数据源中的连接的，开启，关闭，回滚操作，用事物管理器 -->
+		<property name="dataSource" ref="pooledDataSource"></property>
+	</bean>
+
+	<!--6. 1.开启基于注解的事物 2.使用xml配置形式的事物（一般重要的配置推荐使用配置式） -->
+	<aop:config>
+		<!-- 切入点表达式 -->
+		<aop:pointcut
+			expression="execution(* com.daralisdan.service..*(..))" id="txPoint" />
+		<!-- 配置事物增强,advice-ref引用tx:advice的切入点，pointcut-ref引用aop:pointcut的方法 -->
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="txPoint" />
+
+	</aop:config>
+
+	<!-- 7.配置事物增强，事物表达式如何切入方法 -->
+	<tx:advice id="txAdvice">
+		<!-- 切入表达式之后如何切入方法，需要看如下配置 -->
+		<tx:attributes>
+			<!-- *表示切入点切入的所有方法，所有方法都是事物方法 -->
+			<tx:method name="*" />
+			<!--get开始的所有方法，（认为get开始的方法都是查询，则可以调优,只读） -->
+			<tx:method name="get*" read-only="true" />
+		</tx:attributes>
+	</tx:advice>
+
+</beans>

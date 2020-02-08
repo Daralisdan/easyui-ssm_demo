@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tree 树与后台交互_拖放_增删改查</title>
+    <!--  jquery的核心文件-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/jquery-1.7.2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.2.6/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.2.6/themes/icon.css">
+    <!--    引入公共的css样式-->
+    <link rel="stylesheet" href="../css/common.css">
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/jquery.easyui.min.js"></script>
+    <!--    汉化包-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/locale/easyui-lang-zh_CN.js"></script>
+    <!--    表单验证的公共部分-->
+    <script type="text/javascript" src="../js/common.js"></script>
+
+    <!--树的数据格式（Tree Data Format）每个节点可以包括下列属性：
+        id：节点的 id，它对于加载远程数据很重要。
+        text：要显示的节点文本。
+        state：节点状态，'open' 或 'closed'，默认是 'open'。当设置为 'closed' 时，该节点有子节点，并且将从远程站点加载它们。
+        checked：指示节点是否被选中。
+        attributes：给一个节点添加的自定义属性。
+        children：定义了一些子节点的节点数组。
+    比如：
+   [  {
+        "id":1,
+        "text":"Folder1",
+        "iconCls":"icon-save",
+        "children":[{
+            "text":"File1",
+            "checked":true
+        }]-->
+    <script type="text/javascript">
+        var flag; //全局变量，判断是添加还是修改方法
+
+        $(function () {
+            $("#t1").tree({
+                //tree的特点：发送异步ajax请求的时候会携带一个id的参数(即点击节点时发送异步请求，就会携带一个id传到后台)
+                url: '/tree/getTree',
+                dnd: true, 	//定义是否启用拖放。
+                onDrop: function (target, source, point) {
+                    //当节点被放置时触发。
+                    console.log(target); //放置的目标节点。
+                    console.log(source);//源节点。//操作的那个对象
+                    console.log(point); //表示放置操作，可能的值是：'append'、'top' 或 'bottom'。
+                    // getNode 获取指定的节点对象。
+                    var tar = $("#t1").tree('getNode', target);
+
+                    //拖拽更新=================================
+                    $.ajax({
+                        type: 'post',
+                        url: '/tree/changeLevel',
+                        data: {
+                            targetId: tar.id, //目标对象id，即要放到哪个对象下的id
+                            sourceId: source.id, //源对象id，即此时拖拽的那个对象id
+                            point: point //放置操作
+                        },
+                        dataType: 'json',
+                        cache: false,
+                        success: function (result) {
+                            $.messager.show({
+                                title: '提示信息',
+                                msg: '操作成功!'
+                            });
+                        }
+                    });
+
+                },
+                onContextMenu: function (e, node) { //onContextMenu 当右键点击节点时触发
+                    //禁止浏览器的菜单打开
+                    e.preventDefault();
+                    // select 选中一个节点。
+                    $(this).tree('select', node.target);//选中状态
+                    $('#mm').menu('show', {
+                        left: e.pageX,
+                        top: e.pageY
+                    });
+                }
+            });
+
+            //保存和修改按钮=========================================================
+            $('#savebtn').click(function () {
+                if (flag == 'add') {
+                    //添加操作
+                    //点击保存的时候，进行前台更新================================
+                    // 1.获取选中的节点（父节点） getSelected 获取选中的节点并返回它，如果没有选中节点，则返回 null。
+                    var node = $("#t1").tree("getSelected");
+                    //2. 调用追加节点的方法，然后再该节点下新增一个子节 append追加一些子节点到一个父节点
+                    $("#t1").tree("append", {
+                        parent: node.target,
+                        data: [{
+                            text: $("#myform").find('input[name=name]').val(),
+                            attributes: {
+                                url: $("#myform").find('input[name=url]').val()
+                            }
+                        }]
+                    });
+
+                    //2.后台同步更新
+                    $.ajax({
+                        type: 'post',
+                        url: '/tree/save',
+                        cache: false,
+                        dataType: 'json',
+                        data: {
+                            parentId: node.id,
+                            name: $('#myform').find('input[name=name]').val(),
+                            url: $('#myform').find('input[name=url]').val()
+                        },
+                        success: function (rel) {
+                            //1.刷新节点,一定是选中节点的父亲，刷新节点
+                            // 1.2根据当前节点选中当前节点的父亲 getParent获取父节点
+                            var parent = $("#t1").tree("getParent", node.target);
+                            //1.3 刷新父节点,reload 重新加载树的数据
+                            $("#t1").tree("reload", parent.target);
+
+                            $.messager.show({
+                                title: '提示信息',
+                                msg: '操作成功!'
+                            });
+                        }
+                    });
+
+                } else {
+                    //    flag=edit 修改操作
+                    $.ajax({
+                        type: 'post',
+                        url: '/tree/update',
+                        cache: false,
+                        dataType: 'json',
+                        data: {
+                            id: $('#myform').find('input[name=id]').val(),
+                            name: $('#myform').find('input[name=name]').val(),
+                            url: $('#myform').find('input[name=url]').val()
+                        },
+                        success: function (rel) {
+                            //1.刷新节点,一定是选中节点的父亲，刷新节点
+                            //1.1选中当前节点
+                            var node = $("#t1").tree("getSelected");
+                            // 1.2根据当前节点选中当前节点的父亲 getParent获取父节点
+                            var parent = $("#t1").tree("getParent", node.target);
+                            //1.3 刷新父节点,reload 重新加载树的数据
+                            $("#t1").tree("reload", parent.target);
+
+                            //给出提示
+                            $.messager.show({
+                                title: '提示信息',
+                                msg: '操作成功!'
+                            });
+                        }
+                    });
+
+                }
+                //    点击确定保存，关闭弹框
+                $("#mydiv").dialog("close");
+            });
+            //取消按钮=====================
+            $('#cancelbtn').click(function () {
+                $('#mydiv').dialog('close');
+            });
+
+        });
+
+        function append() {
+            flag = 'add';
+            //1.先清空表单,然后重新填充选中节点中的id,name,url属性
+            $("#myform").form("clear");
+            $("#mydiv").dialog('open');
+        }
+
+        function editor() {
+            flag = 'edit';
+            //1.先清空表单,然后重新填充选中节点中的id,name,url属性
+            $("#myform").form("clear");
+            //    getSelected 获取选中的节点并返回它
+            var node = $("#t1").tree("getSelected");
+            //2.重新填充选中节点中的id,name,url属性
+            $("#myform").form('load', {
+                id: node.id,
+                name: node.text,
+                url: node.attributes.url
+            });
+            //3.然后再打开弹框
+            $("#mydiv").dialog("open");
+        }
+
+        function remove() {
+            //前台删除 remove 移除一个节点和它的子节点
+            var node = $("#t1").tree("getSelected");
+            $("#t1").tree("remove", node.target);
+            //    后台删除
+            $.post("/tree/delete", {id: node.id}, function (result) {
+                //给出提示
+                $.messager.show({
+                    title: '提示信息',
+                    msg: '操作成功!'
+                });
+            });
+        }
+    </script>
+
+
+</head>
+<body>
+
+<!--js方式初始化权限树==========================================-->
+<ul id="t1"></ul>
+
+<!--右击鼠标，弹出菜单==================================================-->
+<div id="mm" class="easyui-menu" style="width:150px;">
+    <div onclick="append()">Append</div>
+    <div onclick="editor()">editor</div>
+    <div onclick="remove()">Remove</div>
+</div>
+<!--点击菜单，弹出弹框===============================================-->
+<div id="mydiv" title="设置权限" class="easyui-dialog" style="width:300px;" closed=true>
+    <form id="myform" method="post">
+        <input type="hidden" name="id" value=""/>
+        <table>
+            <tr>
+                <td>权限名称:</td>
+                <td><input type="text" name="name" value=""/></td>
+            </tr>
+            <tr>
+                <td>url:</td>
+                <td><input type="text" name="url" value=""/></td>
+            </tr>
+            <tr align="center">
+                <td colspan="2">
+                    <a id="savebtn" class="easyui-linkbutton">确定</a>
+                    <a id="cancelbtn" class="easyui-linkbutton">取消</a>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+</body>
+</html>

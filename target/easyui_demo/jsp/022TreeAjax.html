@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tree 树与后台交互</title>
+    <!--  jquery的核心文件-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/jquery-1.7.2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.2.6/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.2.6/themes/icon.css">
+    <!--    引入公共的css样式-->
+    <link rel="stylesheet" href="../css/common.css">
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/jquery.easyui.min.js"></script>
+    <!--    汉化包-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/locale/easyui-lang-zh_CN.js"></script>
+    <!--    表单验证的公共部分-->
+    <script type="text/javascript" src="../js/common.js"></script>
+
+    <!--树的数据格式（Tree Data Format）每个节点可以包括下列属性：
+        id：节点的 id，它对于加载远程数据很重要。
+        text：要显示的节点文本。
+        state：节点状态，'open' 或 'closed'，默认是 'open'。当设置为 'closed' 时，该节点有子节点，并且将从远程站点加载它们。
+        checked：指示节点是否被选中。
+        attributes：给一个节点添加的自定义属性。
+        children：定义了一些子节点的节点数组。
+    比如：
+   [  {
+        "id":1,
+        "text":"Folder1",
+        "iconCls":"icon-save",
+        "children":[{
+            "text":"File1",
+            "checked":true
+        }]-->
+    <script type="text/javascript">
+        $(function () {
+            $("#t1").tree({
+                //tree的特点：发送异步ajax请求的时候会携带一个id的参数(即点击节点时发送异步请求，就会携带一个id传到后台)
+                url: '/tree/getTree'
+            });
+
+        });
+
+    </script>
+
+
+</head>
+<body>
+
+<!--js方式初始化-->
+<ul id="t1"></ul>
+</body>
+</html>

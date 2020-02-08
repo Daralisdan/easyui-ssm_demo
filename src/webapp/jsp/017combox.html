@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Combobox组合_省级联动</title>
+    <!--  jquery的核心文件-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/jquery-1.7.2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.2.6/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.2.6/themes/icon.css">
+    <!--    引入公共的css样式-->
+    <link rel="stylesheet" href="../css/common.css">
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/jquery.easyui.min.js"></script>
+    <!--    汉化包-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/locale/easyui-lang-zh_CN.js"></script>
+    <!--    表单验证的公共部分-->
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script type="text/javascript">
+        $(function () {
+
+            $("#sel_1").combobox({
+                // onSelect:当用户选择一个列表项时触发。
+                //1.当选中某个省份的时候触发，
+                onSelect: function () {
+                    //2.触发事件之后获取省份的id 也就是valueField="id"
+                    // getValue 获取组件的值。它是combo的属性
+                    var pid = $("#sel_1").combobox('getValue');
+
+                    //reload方式向后台请求数据===========================================
+                    //3. 把请求的数据加载到 sel_2中
+                    // reload：请求远程的列表数据。传 'url' 参数来重写原始的 URL 值。
+                    //    通过省份的id，查询获取到城市信息，然后渲染到页面，把城市信息数据加载到sel_2中
+                    //
+                    $("#sel_2").combobox('setValue', ''); //解决选中省份时，城市选框出现的id
+                    $("#sel_2").combobox('reload', '/privince/getCity?id=' + pid);
+
+                    //ajax的方式向后台请求数据==========================================================
+                    /* $.ajax({
+                         type: 'POST',
+                         url: '/privince/getCity',
+                         cache: false,   //是否清除缓存
+                         data: {id: pid},
+                         dataType: 'json', //服务器返回时数据接收的类型
+                         success: function (rel) {
+                             $("#sel_2").combobox('setValue', '');
+                             $("#sel_2").combobox('loadData', rel);
+                         }
+                     });
+ */
+
+                }
+            });
+
+            //自动搜索
+            $('#search').combobox({
+                //data:[{id:1 ,val:'男'},{id:2 ,val:'女'}] ,
+                mode: 'remote',
+                url: '/privince/getCityName',
+                valueField: 'id',
+                textField: 'username',
+                // delay: 1000
+            });
+        });
+
+    </script>
+
+
+</head>
+<body>
+<select id="sel_1" class="easyui-combobox" valueField="id" textField="name" url="/privince/getPrivince"></select>
+<select id="sel_2" class="easyui-combobox" valueField="id" textField="name"></select>
+自动搜索:<input id="search"/><br/>
+</body>
+</html>

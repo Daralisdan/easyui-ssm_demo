@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>layout布局-Tab选项卡——手风琴组件accordion</title>
+    <!--  jquery的核心文件-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/jquery-1.7.2.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.2.6/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.2.6/themes/icon.css">
+
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/jquery.easyui.min.js"></script>
+    <!--    汉化包-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/locale/easyui-lang-zh_CN.js"></script>
+
+
+    <script type="text/javascript">
+        $(function () {
+
+        });
+
+
+    </script>
+</head>
+<body>
+<!-- layout布局依赖 panel组件，panel组件的属性也可以用
+fit=true 当设置为 true 时，面板（panel）的尺寸就适应它的父容器。
+-->
+<!--<div id="cc" class="easyui-layout" fit=true style="width:600px;height:400px;">
+    &lt;!&ndash; split当设置为 true 时显示拆分栏，可以用它改变面板（panel）的尺寸。
+       &ndash;&gt;
+    <div region="north" title='North Title' split=false style="height:100px;"></div>
+    <div region='south' title='South Title' split=true style="height:100px;"></div>
+    <div region='east' title='East' split=true iconCls='icon-reload' style="width:100px;"></div>
+    &lt;!&ndash;collapsed：	定义初始化面板（panel）是不是折叠的&ndash;&gt;
+    <div region='west' collapsed=true title='West' split=true style="width:100px;"></div>
+    <div region='center' title='center title' style="padding:5px;background:#eee;"></div>
+</div>-->
+
+
+<!--传统的页面=================================-->
+<!--<div id="cc" class="easyui-layout" fit=true style="width:600px;height:400px;">
+
+    <div region="north" title='North Title' split=false style="height:100px;"></div>
+    <div region='west' title='West' split=true style="width:200px;">
+
+    </div>
+    &lt;!&ndash;    center不能注释掉，必须存在
+    href="001Message.html" 只会抽取页面body中的内容
+    &ndash;&gt;
+    &lt;!&ndash;    <div region='center' href="001Message.html" title='center title' style="padding:5px;background:#eee;"></div>&ndash;&gt;
+    <div region='center' title='center title' style="padding:5px;background:#eee;">
+
+    </div>
+</div>-->
+
+
+
+<!--传统的页面=================================-->
+<div id="cc" class="easyui-layout" fit=true style="width:600px;height:400px;">
+
+    <div region="north" title='North Title' split=false style="height:100px;"></div>
+    <div region='west' title='West' split=true style="width:200px;">
+        <!--accordion 手风琴组件===============================================-->
+        <div id="aa" class="easyui-accordion" fit="true">
+            <div title="Title1" iconCls='icon-save' style="overflow:auto;padding:10px;">
+                <h3 style="color:#0099FF;">Accordion for jQuery</h3>
+                <p>Accordion is a part of easyui framework for jQuery.
+                    It lets you define your accordion component on web page more easily.</p>
+            </div>
+
+            <div title="Title2" iconCls='icon-reload' selected=true style="padding:10px;">
+                content2
+            </div>
+
+            <div title="Title3">
+                content3
+            </div>
+        </div>
+
+    </div>
+    <!--    center不能注释掉，必须存在
+    href="001Message.html" 只会抽取页面body中的内容
+    -->
+    <!--    <div region='center' href="001Message.html" title='center title' style="padding:5px;background:#eee;"></div>-->
+    <div region='center' title='center title' style="padding:5px;background:#eee;">
+
+        <!--          EasyUI Tabs 标签页/选项卡================================= -->
+        <div id="tt" class="easyui-tabs" fit="true" style="width:500px;height:250px;">
+            <div title="Tab1" style="padding:20px;display:none;">tab1</div>
+            <!--           closable	="true"  定义是否显示关闭按钮。-->
+            <div title="Tab2" closable="true" style="overflow:auto;padding:20px;display:none;">tab2</div>
+            <div title="Tab3" closable="true" iconCls="icon-reload" style="display:none;">tab3</div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>基本组件</title>
+    <!--  jquery的核心文件-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/jquery-1.7.2.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.2.6/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.2.6/themes/icon.css">
+
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/jquery.easyui.min.js"></script>
+    <!--    汉化包-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/locale/easyui-lang-zh_CN.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            //panel============================================================
+            // $("#mypanel").panel({
+            //     title: '我的面板',
+            //     minimizable: true,
+            //     maximizable: true,
+            //     collapsible: true,
+            //     closable: true,
+            //     iconCls: 'icon-edit',
+            //     width: 300,
+            //     height: 300,
+            //     content:'我是面板内容'
+            // });
+
+            //    window==================================================================
+
+            /*        $("#btn").click(function () {
+
+                        $('#mywindow').window({
+                            content: '我是窗口内容',
+                            onOpen: function () {
+                                alert("窗口打开了")
+                            }
+                        });
+                    });*/
+
+            /* $("#btn").click(function () {
+
+                            //jquery要想调用方法。直接设置为第一个参数即可,open这个方法是panel的方法
+                            $('#mywindow').window('open');
+
+                        });*/
+
+            //dialog=================================================================
+
+            $("#dialog").dialog({
+                title: "我是对话框",
+                iconCls: 'icon-ok',
+                toolbar: [{
+                    text: '新增',
+                    iconCls: 'icon-add',
+                    //点击事件
+                    handler: function () {
+                        alert("新增了")
+                    }
+                }, {
+                    text: '修改',
+                    iconCls: 'icon-edit'
+                }],
+                buttons:[{
+                    text: '确定',
+                    iconCls: 'icon-ok',
+                    //点击事件
+                    handler: function () {
+                        alert("确定了")
+                    }
+                }, {
+                    text: '取消',
+                    iconCls: 'icon-remove'
+                }]
+            });
+        });
+
+
+    </script>
+</head>
+<body>
+this is easyui message page
+
+
+<!--panel===========================================================-->
+<!--使用HTML的方式-->
+<!--<div id="mypanel" class="easyui-panel" title="我的面板"
+     minimizable="true"
+     maximizable="true"
+     collapsible="true"
+     closable="true"
+     iconCls="icon-add" style="width: 300px;height: 300px"></div>-->
+
+<!--使用jQuery的方式-->
+<!--<div id="mypanel"></div>-->
+
+<!--window窗口  可以使用panel中的属性========================================================================-->
+
+<!--draggable:窗口是否拖拽
+resizable="false" 定义窗口是否可调整尺寸。
+modal:	定义窗口是不是模态（modal）窗口
+-->
+<!--
+<div id="mywindow" class="easyui-window" title="我的窗口"
+     draggable=false
+     resizable=false
+     style="width: 300px;height: 300px"
+></div>
+<input id="btn" type="button" value="点击" onclick="mywin"/>
+-->
+<!--<div id="mywindow" class="easyui-window" title="我的窗口"
+     draggable=false
+     resizable=false
+     closed="true"
+     style="width: 300px;height: 300px"
+></div>
+<a id="btn" href="#" class="easyui-linkbutton">点击我</a>-->
+
+<!--dialog 依赖linkbutton,window 即可以使用它们的属性================================================-->
+
+<div id="dialog" class="easyui-dialog" style="width: 300px;height: 300px"></div>
+</body>
+</html>

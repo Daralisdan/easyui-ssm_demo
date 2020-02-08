@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>datagrid数据表结构基本属性</title>
+    <!--  jquery的核心文件-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/jquery-1.7.2.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.2.6/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.2.6/themes/icon.css">
+
+    <!--    引入公共的css样式-->
+    <link rel="stylesheet" href="../css/common.css">
+
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/jquery.easyui.min.js"></script>
+    <!--    汉化包-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/locale/easyui-lang-zh_CN.js"></script>
+
+    <!--{"total":1,
+          "rows":[{"id":27,
+          "username":"admin",
+          "password":"1234"  }]
+          }  datagrid是这种json数据格式，需要用map去封装-->
+    <script type="text/javascript">
+        $(function () {
+            $("#t_user").datagrid({
+                idField: 'id',     // 指明哪一个字段是标识字段,使用数据表格都可以加上
+                title: '用户列表',
+                width: 1000,
+                height: 400,
+                url: '/user/getList',
+                fitColumns: true,  // 设置为 true，则会自动扩大或缩小列的尺寸以适应网格的宽度并且防止水平滚动。
+                // frozenColumns:[{ }],  //同列属性，但是这些列将会被冻结在左侧。不能与fitColumns 一起使用
+
+                //field 属性的值要与实体类中的字段一一对应
+                columns: [[
+                    {field: 'username', title: '用户名', width: 100},
+                    {field: 'password', title: '密码', width: 100},
+                    {field: 'sex', title: '性别', width: 100, align: 'right'},
+                    {field: 'age', title: '年龄', width: 100},
+                    {field: 'brithday', title: '生日', width: 100},
+                    {field: 'city', title: '城市', width: 100},
+                    {field: 'salary', title: '薪资', width: 100},
+                    {field: 'starttime', title: '开始时间', width: 100},
+                    {field: 'endtime', title: '结束时间', width: 100},
+                    {field: 'descript', title: '描述', width: 100}
+                ]],
+                striped: true,//是否显示斑马线效果。（即奇偶行使用不同背景色）
+                nowrap: true, //设置为 true，则把数据显示在一行里(即折行显示)。设置为 true 可提高加载性能。
+                loadMsg: '数据正在加载，请耐心等待...',  //当从远程站点加载数据时，显示的提示消息。
+                rownumbers: true,	//如果为true，则显示一个行号列。
+                singleSelect: true,//如果为true，则只允许选择一行。
+
+                //这三个属性一起使用
+                remoteSort: false, //定义是否从服务器排序数据。
+                sortName: 'salary', //定义可以排序的列。
+                sortOrder: 'desc',//定义列的排序顺序，只能用 'asc' 或 'desc'
+
+                // rowStyler返回例如 \'background:red\' 的样式，用于高亮显示
+                rowStyler: function (index, record) {
+                    console.log('index:位置索引' + "============record:该行相应的记录的对象");
+                    console.log(index);
+                    console.log(record);
+                    //如果年龄大于10，就高亮显示该行记录
+                    if (record.age > 25) {
+                        return "background:red";
+                    }
+                } //返回例如 'background:red' 的样式。该函数需要两个参数：rowIndex：行的索引，从 0 开始。rowData：该行相应的记录。
+
+            });
+        });
+
+
+    </script>
+
+</head>
+<body>
+<table id="t_user"></table>
+
+</body>
+</html>

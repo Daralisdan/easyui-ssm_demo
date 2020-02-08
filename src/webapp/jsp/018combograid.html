@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title> Combogrid 组合网格</title>
+    <!--  jquery的核心文件-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/jquery-1.7.2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.2.6/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.2.6/themes/icon.css">
+    <!--    引入公共的css样式-->
+    <link rel="stylesheet" href="../css/common.css">
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/jquery.easyui.min.js"></script>
+    <!--    汉化包-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/locale/easyui-lang-zh_CN.js"></script>
+    <!--    表单验证的公共部分-->
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script type="text/javascript">
+        $(function () {
+
+            //    combogrid实现
+            $('#cc').combogrid({
+                panelWidth: 450,
+                url: '/user/getListName',
+                idField:'id',
+                mode: 'remote',
+                textField:'username',
+                columns: [[
+                    {field: 'username', title: '用户名', width: 100},
+                    {field: 'password', title: '密码', width: 100},
+                    {field: 'sex', title: '性别', width: 100, align: 'right'},
+                    {field: 'age', title: '年龄', width: 100},
+                    {field: 'brithday', title: '生日', width: 100},
+                    {field: 'city', title: '城市', width: 100},
+                    {field: 'salary', title: '薪资', width: 100},
+                    {field: 'starttime', title: '开始时间', width: 100},
+                    {field: 'endtime', title: '结束时间', width: 100},
+                    {field: 'descript', title: '描述', width: 100}
+                ]]
+            });
+        });
+
+    </script>
+
+
+</head>
+<body>
+combogrid实现:<select id="cc" name="gridId" style="width:250px;"></select>
+</body>
+</html>

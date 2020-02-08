@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Combo 组合</title>
+    <!--  jquery的核心文件-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/jquery-1.7.2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.2.6/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.2.6/themes/icon.css">
+    <!--    引入公共的css样式-->
+    <link rel="stylesheet" href="../css/common.css">
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/jquery.easyui.min.js"></script>
+    <!--    汉化包-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/locale/easyui-lang-zh_CN.js"></script>
+    <!--    表单验证的公共部分-->
+    <script type="text/javascript" src="../js/common.js"></script>
+    <script type="text/javascript">
+        $(function () {
+
+            $('#cc').combo({
+                required: true,
+                editable: false,//不能编辑
+                width: 255,
+                panelHeight: 300
+            });
+            $('#sp').appendTo($('#cc').combo('panel'));
+            $('#sp img').click(function () {
+
+                //使用attr 方法获取属性的值
+                // var v = $(this).val();
+                var v = $(this).attr('value');
+                //使用attr 方法获取属性的值，文本的值
+                // var vs = $(this).next('span').text();
+                var s = $(this).attr('text');
+                //setValue 设置组件的值。把取到的值赋值到combo上，然后再隐藏掉
+                $('#cc').combo('setValue', v).combo('setText', s).combo('hidePanel');
+            });
+        });
+
+    </script>
+
+
+</head>
+<body>
+<select id="cc"></select>
+<div id="sp">
+    <div style="color:#99BBE8;background:#fafafa;padding:5px;">Select a language</div>
+    <div>
+        <img src="../images/001.jpg" value="001.jpg" text="图片1"/>
+    </div>
+    <div>
+        <img src="../images/002.jpg" value="002.jpg" text="图片2"/>
+    </div>
+    <div>
+        <img src="../images/003.jpg" value="003.jpg" text="图片3"/>
+    </div>
+    <div>
+        <img src="../images/004.jpg" value="004.jpg" text="图片4"/>
+    </div>
+    <div>
+        <img src="../images/005.jpg" value="005.jpg" text="图片5"/>
+    </div>
+</div>
+</body>
+</html>

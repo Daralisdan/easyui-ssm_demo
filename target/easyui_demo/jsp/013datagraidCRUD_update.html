@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>datagrid数据表结构的增删改查_修改</title>
+    <!--  jquery的核心文件-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/jquery-1.7.2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.2.6/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.2.6/themes/icon.css">
+    <!--    引入公共的css样式-->
+    <link rel="stylesheet" href="../css/common.css">
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/jquery.easyui.min.js"></script>
+    <!--    汉化包-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/locale/easyui-lang-zh_CN.js"></script>
+    <!--    表单验证的公共部分-->
+    <script type="text/javascript" src="../js/common.js"></script>
+
+    <!--{"total":1,
+          "rows":[{"id":27,
+          "username":"admin",
+          "password":"1234"  }]
+          }  datagrid是这种json数据格式，需要用map去封装-->
+    <script type="text/javascript">
+        $(function () {
+            //表单验证，通用部分放在公共的common.js文件夹中=================================================================
+
+            /*   $.extend($.fn.validatebox.defaults.rules, {
+                   //midLength 自定义的名称，
+                   midLength: {
+                       //value：表示input输入框中的值，param：接收的是validType="midLength[2,5]"中的参数[2,5]
+                       validator: function (value, param) {
+                           //param[0]表示数组中的第一个参数，如[2,5]中的2
+                           return value.length >= param[0] && value.length <= param[1];
+                       },
+                       //验证失败时的提示信息
+                       // message: '用户名必须在2~5个字符之间'
+                       message: ''
+                   },
+                   //密码验证
+                   // validType="equalLength[4]"
+                   equalLength: {
+                       validator: function (value, param) {
+                           //param[0]表示数组中的第一个参数，如[2,5]中的2
+                           return value.length == param[0];
+                       },
+                       //验证失败时的提示信息
+                       message: "密码必须是4个字符"
+                   }
+               });
+   */
+            //年龄验证 数值验证组件=========================================
+            $('#age').numberbox({
+                min: 0,
+                max: 100,
+                required: true,//定义是否字段应被输入。是 Validatebox的属性
+                missingMessage: '年龄必填',
+                precision: 0  //	显示在小数点后面的最大精度。
+            });
+
+            //日期组件
+            $('#brithday').datebox({
+                required: true,//定义是否字段应被输入。是 Validatebox的属性
+                missingMessage: '生日必填',
+                editable: false //该属性是combox的 combox该属性扩展自验证框（validatebox）
+            });
+
+            //薪水验证
+            $('#salary').numberbox({
+                min: 1000,
+                max: 20000,
+                required: true,//定义是否字段应被输入。是 Validatebox的属性
+                missingMessage: '薪水必填',
+                precision: 2  //	显示在小数点后面的最大精度。
+            });
+
+            //开始时间，结束时间验证，加上时分秒
+            $("#starttime,#endtime").datetimebox({
+                required: true,
+                missingMessage: '时间必填',
+                editable: false
+            });
+
+
+            //初始化数据表格===================================================================
+            var flag; // undefined 全局变量 用于判断新增和修改方法
+            $("#t_user").datagrid({
+                idField: 'id',     // 指明哪一个字段是标识字段,使用数据表格都可以加上
+                title: '用户列表',
+                width: 1300,
+                height: 500,
+                url: '/user/getListPageHelper',
+                // fitColumns: true,  // 设置为 true，则会自动扩大或缩小列的尺寸以适应网格的宽度并且防止水平滚动。
+                frozenColumns: [[				//冻结列特性 ,不要与fitColumns 特性一起使用
+                    {
+                        field: 'ck',
+                        width: 50,
+                        checkbox: true
+                    }
+                ]],  //同列属性，但是这些列将会被冻结在左侧。不能与fitColumns 一起使用
+
+                //field 属性的值要与实体类中的字段一一对应
+                columns: [[
+                    {
+                        field: 'username', title: '用户名', width: 100,
+                        sortable: true,//则允许该列被排序。
+                        styler: function (value, record) {
+                            // 单元格的样式函数
+                            if (value == 'admin') {
+                                return 'background:blue;';
+                            }
+                        }
+                    },
+                    {field: 'password', title: '密码', width: 100},
+                    {
+                        field: 'sex',
+                        title: '性别',
+                        width: 100,
+                        align: 'right',
+                        formatter: function (value, record, index) {
+                            //formatter单元格的格式化函数，需要三个参数:
+                            // value：字段的值,rowData（record）：行的记录数据(后台返回的记录数),rowIndex：行的索引
+                            // console.log("sex=========================start")
+                            // console.log(value);
+                            // console.log(record);
+                            // console.log(index);
+                            // console.log("sex=========================end")
+                            if (value == 1) {
+                                return '<span style="color: #0099FF">男</span>'
+                            } else if (value == 2) {
+                                return '<span style="color:#00ee00">女</span>'
+                            }
+                        }
+                    },
+                    {
+                        field: 'age', title: '年龄', width: 100, sortable: true //则允许该列被排序。
+                    },
+                    {field: "brithday", title: '生日', width: 100},
+                    {
+                        field: 'city', title: '城市', width: 100,
+                        formatter: function (value, record, index) {
+                            /* if (value == 1) {
+                                 return '北京';
+                             } else if (value == 2) {
+                                 return '上海';
+                             } else if (value == 3) {
+                                 return '深圳';
+                             } else if (value == 4) {
+                                 return '长春';
+                             }*/
+                            //使用ajax同步发送请求
+                            var str = '';
+                            $.ajax({
+                                type: 'POST',
+                                url: "/user/getCityName",
+                                data: {id: value},
+                                dataType: 'JSON',
+                                cache: false, //清楚缓存
+                                async: false,//同步请求
+                                success: function (result) {
+                                    console.log(result);
+                                    str = result.name;
+                                }
+                            });
+                            return str;
+                        }
+
+                    },
+                    {field: 'salary', title: '薪资', width: 100},
+                    {field: "starttime", title: '开始时间', width: 100},
+                    {field: 'endtime', title: '结束时间', width: 100},
+                    {field: 'descript', title: '描述', width: 100}
+                ]],
+                striped: true,//是否显示斑马线效果。（即奇偶行使用不同背景色）
+                nowrap: true, //设置为 true，则把数据显示在一行里(即折行显示)。设置为 true 可提高加载性能。
+                loadMsg: '数据正在加载，请耐心等待...',  //当从远程站点加载数据时，显示的提示消息。
+                rownumbers: true,	//如果为true，则显示一个行号列。
+                // singleSelect: true,//如果为true，则只允许选择一行。
+
+                //这三个属性一起使用
+                /*  remoteSort: false, //定义是否从服务器排序数据。
+                  sortName: 'salary', //定义可以排序的列。
+                  sortOrder: 'desc',//定义列的排序顺序，只能用 'asc' 或 'desc'
+  */
+                // rowStyler返回例如 \'background:red\' 的样式，用于高亮显示
+                rowStyler: function (index, record) {
+                    // console.log('index:位置索引' + "============record:该行相应的记录的对象");
+                    // console.log(index);
+                    // console.log(record);
+                    //如果年龄大于10，就高亮显示该行记录
+                    if (record.age > 25) {
+                        return "background:red";
+                    }
+                },//	返回例如 'background:red' 的样式。该函数需要两个参数：rowIndex：行的索引，从 0 开始。rowData：该行相应的记录。
+
+                pagination: true,       //则在数据网格（datagrid）底部显示分页工具栏。
+                // pagePosition:'bottom'       //定义分页栏的位置。可用的值有：'top'、'bottom'、'both'。
+                pageSize: 5,         //初始化页面尺寸,必须是pageList中有的
+                pageList: [5, 10, 15, 20, 25],    //初始化页面尺寸的选择列表。[10,20,30,40,50]
+                toolbar: [
+                    {
+                        text: '新增用户',
+                        iconCls: 'icon-add',
+                        handler: function () {
+                            flag = 'add';
+                            $('#mydialog').dialog({
+                                title: '用户新增'
+                            });
+                            //1.打开之前，清空弹框数据
+                            //清空方式一：
+                            // $('#myform').find('input[name!=sex]').val("");
+                            //清空方式二：转成的dom对象
+                            $('#myform').get(0).reset();
+                            //清空方式三：这种方式会清空所有数据，包括默认的性别等
+                            // $('#myform').form('clear');
+
+                            $('#mydialog').dialog('open');
+                        }
+                    }, {
+                        text: '修改用户',
+                        iconCls: 'icon-edit',
+                        handler: function () {
+                            flag = 'edit';
+                            // getSelections 返回所有选中的行，当没有选中的记录时，将返回空数组。
+                            // 获取选中的行，保存在数组中
+                            var arr = $("#t_user").datagrid('getSelections');
+                            if (arr.length != 1) {
+                                $.messager.show({
+                                    title: '提示信息',
+                                    msg: '只能选择一行修改'
+                                });
+                            } else {
+                                $('#mydialog').dialog({
+                                    title: '修改用户'
+                                });
+                                //等于1的时候修改, 修改的时候根据id的取修改，所有需要在表单中加一个id字段的隐藏域
+                                //1.先打开表单弹框
+                                $('#mydialog').dialog('open');
+
+                                //2.清空表单数据
+                                $('#myform').get(0).reset();
+                                //    3.表单数据回显，重新再加载一次表单数据
+                                $('#myform').form('load', {
+                                    id: arr[0].id, //此时id的值会加载到隐藏域中，和其他的数据一起发送给后台
+                                    username: arr[0].username,
+                                    password: arr[0].password,
+                                    sex: arr[0].sex,
+                                    age: arr[0].age,
+                                    brithday: arr[0].brithday,
+                                    city: arr[0].city,
+                                    salary: arr[0].salary,
+                                    starttime: arr[0].starttime,
+                                    endtime: arr[0].endtime,
+                                    descript: arr[0].descript
+
+                                });
+                            }
+                        }
+                    }, {
+                        text: '查询用户',
+                        iconCls: 'icon-search',
+                        handler: function () {
+
+                        }
+                    }, {
+                        text: '删除用户',
+                        iconCls: 'icon-remove',
+                        handler: function () {
+
+                        }
+                    }]
+            });
+
+            //    提交表单==================================================================
+            //保存按钮
+            $('#btn1').click(function () {
+                //先验证，在提交到后台
+                //    如果验证不成功，给个提示消息，并且不能向后台提交
+                if ($('#myform').form('validate')) {
+                    $.ajax({
+                        type: 'POST',
+                        url: flag == 'add' ? '/user/save' : '/user/update',
+                        cache: false,   //是否清除缓存
+                        data: $('#myform').serialize(),//序列化表单 表单中的数据全部传入后台 作用：不用一个一个的取表单中的字段数据传入后台
+                        dataType: 'json', //服务器返回时数据接收的类型
+                        success: function (rel) {
+                            //1.提交成功后，关闭窗口
+                            $("#mydialog").dialog('close');
+                            //2.刷新数据表格
+                            $('#t_user').datagrid('reload');
+                            //3.提示信息
+                            $.messager.show({
+                                title: rel.sta,
+                                msg: rel.mesage
+                            });
+                        },
+                        error: function () {
+                            $.messager.show({
+                                title: rel.sta,
+                                msg: rel.mesage
+                            });
+                        }
+
+                    });
+                } else {
+                    $.messager.show({
+                        title: '提示信息',
+                        msg: '数据验证不通过，不能保存提交'
+                    });
+                }
+            });
+
+            //关闭按钮
+            $('#btn2').click(function () {
+                $('#mydialog').dialog('close');
+            });
+
+
+        });
+
+
+    </script>
+
+
+</head>
+<body>
+<table id="t_user"></table>
+<!--draggable="false"：弹框不能拖拽-->
+<div id='mydialog' class="easyui-dialog" title="新增用户" draggable="false" closed="true" style="width: 300px; ">
+
+    <!--    表单-->
+    <form id="myform" action="" method="post">
+        <!--      表单  修改的时候根据id的取修改，所有需要在表单中加一个id字段的隐藏域===================================-->
+        <input type="hidden" name="id" value="">
+        <table>
+            <tr>
+                <td>用户名：</td>
+                <!-- missingMessage="用户名必填"：当文本框为空时出现的提示文本。
+                    invalidMessage="用户名必须在2~5个字符之间1111111111": 与js代码中的message一样，如果两个同时写的话，表单中的验证会覆盖js代码中的验证提示信息  -->
+                <td><input type="text" class="easyui-validatebox" required="true"
+                           validType="midLength[2,5]" missingMessage="用户名必填" invalidMessage="用户名必须在2~5个字符之间1111111111"
+                           name="username" value=""/></td>
+            </tr>
+            <tr>
+                <!--  validType="equalLength[4]"：表示密码必须是4位-->
+                <td>密码：</td>
+                <td><input type="password" name="password" value="" class="easyui-validatebox" required="true"
+                           validType="equalLength[4]" missingMessage="密码必填"/></td>
+            </tr>
+            <tr>
+                <td>性别：</td>
+                <td>
+                    男<input type="radio" checked="checked" name="sex" value="1"/>
+                    女<input type="radio" name="sex" value="2"/>
+                </td>
+            </tr>
+            <tr>
+                <td>年龄：</td>
+                <td><input id="age" type="text" name="age" value=""/></td>
+            </tr>
+            <tr>
+                <td>出生日期：</td>
+                <td><input id="brithday" style="width: 160px" type="text" name="brithday" value=""/></td>
+            </tr>
+            <tr>
+                <td>所属城市：</td>
+                <!--  valueField="id" ：值 textField="name"：文本内容 对应实体类中的字段
+                获取后台数据：url="/user/getCity" 异步发送请求
+                可以修改光标移动的样式在easyui.css样式中
+                -->
+                <td>
+                    <input type="text" class="easyui-combobox" url="/user/getCity" valueField="id" textField="name"
+                           name="city" value=""/></td>
+            </tr>
+            <tr>
+                <td>薪水：</td>
+                <td><input id="salary" type="text" name="salary" value=""/></td>
+            </tr>
+            <tr>
+                <td>开始时间：</td>
+                <td><input id="starttime" type="text" name="starttime" value=""/></td>
+            </tr>
+            <tr>
+                <td>结束日期：</td>
+                <td><input id="endtime" type="text" name="endtime" value=""/></td>
+            </tr>
+            <tr>
+                <td>个人描述：</td>
+                <td><input type="text" class="easyui-validatebox" required="true"
+                           validType="midLength[5,50]" missingMessage="个人描述必填" invalidMessage="描述必须在5~50个字符之间"
+                           name="descript" value=""/></td>
+            </tr>
+            <tr align="center">
+                <td colspan="2">
+                    <a id="btn1" class="easyui-linkbutton">确定</a>
+                    <a id="btn2" class="easyui-linkbutton">取消</a>
+                </td>
+            </tr>
+        </table>
+
+
+    </form>
+
+</div>
+</body>
+</html>

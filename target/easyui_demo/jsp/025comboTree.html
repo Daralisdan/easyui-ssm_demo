@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Combotree 组合树</title>
+    <!--  jquery的核心文件-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/jquery-1.7.2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.2.6/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.2.6/themes/icon.css">
+    <!--    引入公共的css样式-->
+    <link rel="stylesheet" href="../css/common.css">
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/jquery.easyui.min.js"></script>
+    <!--    汉化包-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/locale/easyui-lang-zh_CN.js"></script>
+    <!--    表单验证的公共部分-->
+    <script type="text/javascript" src="../js/common.js"></script>
+
+
+    <script type="text/javascript">
+
+        $(function () {
+            $("#tt").combotree({
+                // url: '../json/013_tree.json',
+                url: '/tree/getTree',
+                width: 300,
+                checkbox: true, //复选框
+                multiple: true //支持多选 combo
+            });
+
+            $('#btn1').click(function () {
+                // getValues 获取组件的值的数组。 comboz中的属性方法
+                console.info($('#tt').combotree('getValues'));
+            });
+
+            $('#btn2').click(function () {
+                // tree 返回树（tree）对象
+                //console.info($('#tt').combotree('tree'));
+                var tree = $('#tt').combotree('tree');
+                // getRoot 获取根节点，返回节点对象。 tree组件中的属性方法
+                var root = tree.tree('getRoot');
+                console.info(root);
+            });
+        });
+    </script>
+
+
+</head>
+<body>
+
+<input id="tt"/>
+<a id="btn1" class="easyui-linkbutton">获取tree选中的值</a>
+<a id="btn2" class="easyui-linkbutton">返回tree对象</a>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tree 树基本属性</title>
+    <!--  jquery的核心文件-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/jquery-1.7.2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.2.6/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../js/jquery-easyui-1.2.6/themes/icon.css">
+    <!--    引入公共的css样式-->
+    <link rel="stylesheet" href="../css/common.css">
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/jquery.easyui.min.js"></script>
+    <!--    汉化包-->
+    <script type="text/javascript" src="../js/jquery-easyui-1.2.6/locale/easyui-lang-zh_CN.js"></script>
+    <!--    表单验证的公共部分-->
+    <script type="text/javascript" src="../js/common.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            $("#t2").tree({
+                url: '../json/013_tree.json',
+                animate: true, //定义当节点展开折叠时是否显示动画效果。
+                checkbox: true,//定义是否在每个节点前边显示复选框
+                // cascadeCheck: false,//定义是否级联检查。默认是true
+                onlyLeafCheck: true,//	定义是否只在叶节点前显示复选框。
+                dnd: true//定义是否启用拖放。
+            });
+
+        });
+
+        //获取根节点
+        function getRoot(){
+            // getRoot 获取根节点，返回节点对象。
+            console.info($('#t2').tree('getRoot'));
+        }
+        //获取子节点
+        function getChildren(){
+            var root = $('#t2').tree('getRoot');		//object
+            // getChildren 获取子节点， target 参数表示节点的 DOM 对象。
+            console.info($('#t2').tree('getChildren',root.target));
+        }
+        //获取选中的节点
+        function getChecked(){
+            // getChecked 获取选中的节点。状态可用值有：'checked'、'unchecked'、'indeterminate'。如果状态未分配，则返回 'checked' 节点。
+            console.info($('#t2').tree('getChecked'));
+        }
+        //isLeaf
+        function isLeaf(){
+            var sel = $('#t2').tree('getSelected');
+            // getSelected 获取选中的节点并返回它，如果没有选中节点，则返回 null
+            console.info($('#t2').tree('isLeaf', sel.target));
+        }
+        //切换折叠状态
+        function toggle(){
+            var root = $('#t2').tree('getRoot');		//object
+            // toggle 切换节点的展开/折叠状态，target 参数表示节点的 DOM 对象。
+            $('#t2').tree('toggle' , root.target);
+        }
+    </script>
+
+
+</head>
+<body>
+
+<!-- 1 html 形式 渲染 tree  -->
+<!--<ul id="t1" class="easyui-tree">
+    <li>
+        <span>根节点</span>
+        <ul>
+            <li><span>节点1</span></li>
+            <li><span>节点2</span></li>
+            <li><span>节点3</span></li>
+        </ul>
+    </li>
+</ul>-->
+
+<!--js方式初始化-->
+<ul id="t2"></ul>
+<input type="button" onclick="getRoot()" value="获取跟节点"/>
+<input type="button" onclick="getChildren()" value="获取子节点"/>
+<input type="button" onclick="getChecked()" value="获取勾选的节点"/>
+<input type="button" onclick="isLeaf()" value="是否是叶子节点"/>
+<input type="button" onclick="toggle()" value="切换节点状态"/>
+</body>
+</html>
